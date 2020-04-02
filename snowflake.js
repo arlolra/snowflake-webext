@@ -76,7 +76,7 @@ class Snowflake {
           log('proxypair datachannel timed out waiting for open');
           return pair.close();
         }
-      }), 20000); // 20 second timeout
+      }), this.config.datachannelTimeout);
     }, function() {
       //on error, close proxy pair
       return pair.close();
