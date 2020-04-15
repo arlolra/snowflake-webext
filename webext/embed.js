@@ -13,7 +13,11 @@ const port = chrome.runtime.connect({
 
 port.onMessage.addListener((m) => {
   const { active, enabled, total, missingFeature } = m;
-  const popup = new Popup((...args) => chrome.i18n.getMessage(...args));
+  const popup = new Popup(
+    (...args) => chrome.i18n.getMessage(...args),
+    (event) => port.postMessage({ enabled: event.target.checked }),
+    () => port.postMessage({ retry: true })
+  );
 
   if (missingFeature) {
     popup.missingFeature(missingFeature);
@@ -28,7 +32,3 @@ port.onMessage.addListener((m) => {
     popup.turnOff();
   }
 });
-
-document.addEventListener('change', (event) => {
-  port.postMessage({ enabled: event.target.checked });
-})

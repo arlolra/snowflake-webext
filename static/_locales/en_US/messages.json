@@ -26,6 +26,12 @@
   "popupDescOn": {
     "message": "Number of users your Snowflake has helped circumvent censorship in the last 24 hours: $1"
   },
+  "popupRetry": {
+    "message": "Retry"
+  },
+  "popupRetrying": {
+    "message": "Retrying ..."
+  },
   "badgeCookiesOff": {
     "message": "Cookies are not enabled."
   },

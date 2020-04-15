@@ -25,6 +25,21 @@ class WebExtUI extends UI {
     }), 60 * 60 * 1000);
   }
 
+  tryProbe() {
+    WS.probeWebsocket(config.relayAddr)
+    .then(
+      () => {
+        this.missingFeature = false;
+        this.setEnabled(true);
+      },
+      () => {
+        log('Could not connect to bridge.');
+        this.missingFeature = 'popupBridgeUnreachable';
+        this.setEnabled(false);
+      }
+    );
+  }
+
   initToggle() {
     // First, check if we have our status stored
     (new Promise((resolve) => {
@@ -48,17 +63,7 @@ class WebExtUI extends UI {
         this.setEnabled(false);
         return;
       }
-      WS.probeWebsocket(config.relayAddr)
-      .then(
-        () => {
-          this.setEnabled(true);
-        },
-        () => {
-          log('Could not connect to bridge.');
-          this.missingFeature = 'popupBridgeUnreachable';
-          this.setEnabled(false);
-        }
-      );
+      this.tryProbe();
     });
   }
 
@@ -83,6 +88,11 @@ class WebExtUI extends UI {
   }
 
   onMessage(m) {
+    if (m.retry) {
+      // FIXME: Can set a retrying state here
+      this.tryProbe();
+      return;
+    }
     (new Promise((resolve) => {
       chrome.storage.local.set({ "snowflake-enabled": m.enabled }, resolve);
     }))

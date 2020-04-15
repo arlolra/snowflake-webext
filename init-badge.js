@@ -22,7 +22,20 @@ class BadgeUI extends UI {
 
   constructor() {
     super();
-    this.popup = new Popup((...args) => messages.getMessage(...args));
+    this.popup = new Popup(
+      (...args) => messages.getMessage(...args),
+      (event) => {
+        if (event.target.checked) {
+          setSnowflakeCookie('1', COOKIE_LIFETIME);
+        } else {
+          setSnowflakeCookie('', COOKIE_EXPIRE);
+        }
+        update();
+      },
+      () => {
+        tryProbe();
+      }
+    );
   }
 
   setStatus() {}
@@ -92,7 +105,7 @@ function getLang() {
   return defaultLang;
 }
 
-var debug, snowflake, config, broker, ui, log, dbg, init, update, silenceNotifications, query;
+var debug, snowflake, config, broker, ui, log, dbg, init, update, silenceNotifications, query, tryProbe;
 
 (function() {
 
@@ -116,21 +129,7 @@ var debug, snowflake, config, broker, ui, log, dbg, init, update, silenceNotific
     if (debug) { log(msg); }
   };
 
-  update = function() {
-    const cookies = Parse.cookie(document.cookie);
-    if (cookies[COOKIE_NAME] !== '1') {
-      ui.turnOff();
-      snowflake.disable();
-      log('Currently not active.');
-      return;
-    }
-
-    if (!Util.hasWebRTC()) {
-      ui.missingFeature('popupWebRTCOff');
-      snowflake.disable();
-      return;
-    }
-
+  tryProbe = function() {
     WS.probeWebsocket(config.relayAddr)
     .then(
       () => {
@@ -146,6 +145,24 @@ var debug, snowflake, config, broker, ui, log, dbg, init, update, silenceNotific
         log('Could not connect to bridge.');
       }
     );
+  };
+
+  update = function() {
+    const cookies = Parse.cookie(document.cookie);
+    if (cookies[COOKIE_NAME] !== '1') {
+      ui.turnOff();
+      snowflake.disable();
+      log('Currently not active.');
+      return;
+    }
+
+    if (!Util.hasWebRTC()) {
+      ui.missingFeature('popupWebRTCOff');
+      snowflake.disable();
+      return;
+    }
+
+    tryProbe();
   };
 
   init = function() {
@@ -164,15 +181,6 @@ var debug, snowflake, config, broker, ui, log, dbg, init, update, silenceNotific
     snowflake = new Snowflake(config, ui, broker);
     log('== snowflake proxy ==');
     update();
-
-    document.getElementById('enabled').addEventListener('change', (event) => {
-      if (event.target.checked) {
-        setSnowflakeCookie('1', COOKIE_LIFETIME);
-      } else {
-        setSnowflakeCookie('', COOKIE_EXPIRE);
-      }
-      update();
-    })
   };
 
   // Notification of closing tab with active proxy.
