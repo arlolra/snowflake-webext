@@ -13,34 +13,20 @@ const port = chrome.runtime.connect({
 
 port.onMessage.addListener((m) => {
   const { active, enabled, total, missingFeature } = m;
-  const popup = new Popup();
+  const popup = new Popup((...args) => chrome.i18n.getMessage(...args));
 
   if (missingFeature) {
-    popup.setEnabled(false);
-    popup.setActive(false);
-    popup.setStatusText(chrome.i18n.getMessage('popupStatusOff'));
-    popup.setStatusDesc(chrome.i18n.getMessage(missingFeature), true);
-    popup.hideButton();
+    popup.missingFeature(missingFeature);
     return;
   }
 
   const clients = active ? 1 : 0;
 
   if (enabled) {
-    popup.setChecked(true);
-    if (clients > 0) {
-      popup.setStatusText(chrome.i18n.getMessage('popupStatusOn', String(clients)));
-    } else {
-      popup.setStatusText(chrome.i18n.getMessage('popupStatusReady'));
-    }
-    popup.setStatusDesc((total > 0) ? chrome.i18n.getMessage('popupDescOn', String(total)) : '');
+    popup.turnOn(clients, total);
   } else {
-    popup.setChecked(false);
-    popup.setStatusText(chrome.i18n.getMessage('popupStatusOff'));
-    popup.setStatusDesc("");
+    popup.turnOff();
   }
-  popup.setEnabled(enabled);
-  popup.setActive(active);
 });
 
 document.addEventListener('change', (event) => {

@@ -22,43 +22,30 @@ class BadgeUI extends UI {
 
   constructor() {
     super();
-    this.popup = new Popup();
+    this.popup = new Popup((...args) => messages.getMessage(...args));
   }
 
   setStatus() {}
 
   missingFeature(missing) {
-    this.popup.setEnabled(false);
-    this.popup.setActive(false);
-    this.popup.setStatusText(messages.getMessage('popupStatusOff'));
     this.setIcon('off');
-    this.popup.setStatusDesc(messages.getMessage(missing), true);
-    this.popup.hideButton();
+    this.popup.missingFeature(missing);
   }
 
   turnOn() {
     const clients = this.active ? 1 : 0;
-    this.popup.setChecked(true);
     if (clients > 0) {
-      this.popup.setStatusText(messages.getMessage('popupStatusOn', String(clients)));
       this.setIcon('running');
     } else {
-      this.popup.setStatusText(messages.getMessage('popupStatusReady'));
       this.setIcon('on');
     }
-    // FIXME: Share stats from webext
-    this.popup.setStatusDesc('');
-    this.popup.setEnabled(true);
-    this.popup.setActive(this.active);
+    const total = 0;  // FIXME: Share stats from webext
+    this.popup.turnOn(clients, total);
   }
 
   turnOff() {
-    this.popup.setChecked(false);
-    this.popup.setStatusText(messages.getMessage('popupStatusOff'));
     this.setIcon('off');
-    this.popup.setStatusDesc('');
-    this.popup.setEnabled(false);
-    this.popup.setActive(false);
+    this.popup.turnOff();
   }
 
   setActive(connected) {

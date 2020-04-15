@@ -10,7 +10,8 @@ function setClass(elem, className, cond) {
 }
 
 class Popup {
-  constructor() {
+  constructor(getMsgFunc) {
+    this.getMsgFunc = getMsgFunc;
     this.div = document.getElementById('active');
     this.statustext = document.getElementById('statustext');
     this.statusdesc = document.getElementById('statusdesc');
@@ -46,5 +47,27 @@ class Popup {
         n.childNodes.forEach(c => Popup.fill(c, func));
         break;
     }
+  }
+  turnOn(clients, total) {
+    this.setChecked(true);
+    if (clients > 0) {
+      this.setStatusText(this.getMsgFunc('popupStatusOn', String(clients)));
+    } else {
+      this.setStatusText(this.getMsgFunc('popupStatusReady'));
+    }
+    this.setStatusDesc((total > 0) ? this.getMsgFunc('popupDescOn', String(total)) : '');
+    this.setEnabled(true);
+    this.setActive(this.active);
+  }
+  turnOff(desc, error) {
+    this.setChecked(false);
+    this.setStatusText(this.getMsgFunc('popupStatusOff'));
+    this.setStatusDesc(desc ? this.getMsgFunc(desc) : '', error);
+    this.setEnabled(false);
+    this.setActive(false);
+  }
+  missingFeature(desc) {
+    this.turnOff(desc, true);
+    this.hideButton();
   }
 }
