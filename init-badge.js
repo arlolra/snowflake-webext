@@ -32,7 +32,7 @@ class BadgeUI extends UI {
     this.popup.setActive(false);
     this.popup.setStatusText(messages.getMessage('popupStatusOff'));
     this.setIcon('off');
-    this.popup.setStatusDesc(missing, true);
+    this.popup.setStatusDesc(messages.getMessage(missing), true);
     this.popup.hideButton();
   }
 
@@ -139,7 +139,7 @@ var debug, snowflake, config, broker, ui, log, dbg, init, update, silenceNotific
     }
 
     if (!Util.hasWebRTC()) {
-      ui.missingFeature(messages.getMessage('popupWebRTCOff'));
+      ui.missingFeature('popupWebRTCOff');
       snowflake.disable();
       return;
     }
@@ -154,7 +154,7 @@ var debug, snowflake, config, broker, ui, log, dbg, init, update, silenceNotific
         snowflake.beginWebRTC();
       },
       () => {
-        ui.missingFeature(messages.getMessage('popupBridgeUnreachable'));
+        ui.missingFeature('popupBridgeUnreachable');
         snowflake.disable();
         log('Could not connect to bridge.');
       }
@@ -165,7 +165,7 @@ var debug, snowflake, config, broker, ui, log, dbg, init, update, silenceNotific
     ui = new BadgeUI();
 
     if (!Util.hasCookies()) {
-      ui.missingFeature(messages.getMessage('badgeCookiesOff'));
+      ui.missingFeature('badgeCookiesOff');
       return;
     }
 
