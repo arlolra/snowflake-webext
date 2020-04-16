@@ -1,148 +1,143 @@
-# Snowflake
+This is the browser proxy component of Snowflake.
 
-[![Build Status](https://travis-ci.org/keroserene/snowflake.svg?branch=master)](https://travis-ci.org/keroserene/snowflake)
+### Embedding
 
-Pluggable Transport using WebRTC, inspired by Flashproxy.
-
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**
-
-- [Usage](#usage)
-  - [Dependencies](#dependencies)
-  - [More Info](#more-info)
-  - [Building](#building)
-  - [Test Environment](#test-environment)
-- [FAQ](#faq)
-- [Appendix](#appendix)
-    - [-- Testing with Standalone Proxy --](#---testing-with-standalone-proxy---)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-### Usage
-
+See https://snowflake.torproject.org/ for more info:
 ```
-cd client/
-go get
-go build
-tor -f torrc
-```
-This should start the client plugin, bootstrapping to 100% using WebRTC.
-
-#### Dependencies
-
-Client:
-- [pion/webrtc](https://github.com/pion/webrtc)
-- Go 1.10+
-
-Proxy:
-- JavaScript
-
----
-
-#### More Info
-
-Tor can plug in the Snowflake client via a correctly configured `torrc`.
-For example:
-
-```
-ClientTransportPlugin snowflake exec ./client \
--url https://snowflake-broker.azureedge.net/ \
--front ajax.aspnetcdn.com \
--ice stun:stun.l.google.com:19302
--max 3
+<iframe src="https://snowflake.torproject.org/embed.html" width="88" height="16" frameborder="0" scrolling="no"></iframe>
 ```
 
-The flags `-url` and `-front` allow the Snowflake client to speak to the Broker,
-in order to get connected with some volunteer's browser proxy. `-ice` is a
-comma-separated list of ICE servers, which are required for NAT traversal.
-
-For logging, run `tail -F snowflake.log` in a second terminal.
-
-You can modify the `torrc` to use your own broker:
+### Building the badge / snowflake.torproject.org
 
 ```
-ClientTransportPlugin snowflake exec ./client --meek
-```
-
-
-#### Building
-
-This describes how to build the in-browser snowflake. For the client, see Usage,
-above.
-
-The client will only work if there are browser snowflakes available.
-To run your own:
-
-```
-cd proxy/
+npm install
 npm run build
 ```
 
-Then, start a local http server in the `proxy/build/` in any way you like.
-For instance:
+which outputs to the `build/` directory.
+
+### Building the webextension
 
 ```
-cd build/
-python -m http.server
+npm install
+npm run webext
 ```
 
-Then, open a browser tab to `http://127.0.0.1:8000/embed.html` to view
-the debug-console of the snowflake.,
-So long as that tab is open, you are an ephemeral Tor bridge.
+and then load the `webext/` directory as an unpacked extension.
+ * https://developer.mozilla.org/en-US/docs/Tools/about:debugging#Loading_a_temporary_extension
+ * https://developer.chrome.com/extensions/getstarted#manifest
 
+### Testing
 
-#### Test Environment
-
-There is a Docker-based test environment at https://github.com/cohosh/snowbox.
-
-
-### FAQ
-
-**Q: How does it work?**
-
-In the Tor use-case:
-
-1. Volunteers visit websites which host the "snowflake" proxy. (just
-like flashproxy)
-2. Tor clients automatically find available browser proxies via the Broker
-(the domain fronted signaling channel).
-3. Tor client and browser proxy establish a WebRTC peer connection.
-4. Proxy connects to some relay.
-5. Tor occurs.
-
-More detailed information about how clients, snowflake proxies, and the Broker
-fit together on the way...
-
-**Q: What are the benefits of this PT compared with other PTs?**
-
-Snowflake combines the advantages of flashproxy and meek. Primarily:
-
-- It has the convenience of Meek, but can support magnitudes more
-users with negligible CDN costs. (Domain fronting is only used for brief
-signalling / NAT-piercing to setup the P2P WebRTC DataChannels which handle
-the actual traffic.)
-
-- Arbitrarily high numbers of volunteer proxies are possible like in
-flashproxy, but NATs are no longer a usability barrier - no need for
-manual port forwarding!
-
-**Q: Why is this called Snowflake?**
-
-It utilizes the "ICE" negotiation via WebRTC, and also involves a great
-abundance of ephemeral and short-lived (and special!) volunteer proxies...
-
-### Appendix
-
-##### -- Testing with Standalone Proxy --
-
+Unit testing with Jasmine are available with:
 ```
-cd proxy-go
-go build
-./proxy-go
+npm install
+npm test
 ```
 
-More documentation on the way.
+To run locally, start an http server in `build/` and navigate to `/embed.html`.
 
-Also available at:
-[torproject.org/pluggable-transports/snowflake](https://gitweb.torproject.org/pluggable-transports/snowflake.git/)
+### Preparing to deploy
+
+Background information:
+ * https://bugs.torproject.org/23947#comment:8
+ * https://help.torproject.org/tsa/doc/static-sites/
+ * https://help.torproject.org/tsa/doc/ssh-jump-host/
+
+You need to be in LDAP group "snowflake" and have set up an SSH key with your LDAP account.
+In your ~/.ssh/config file, you should have something like:
+
+```
+Host staticiforme
+HostName staticiforme.torproject.org
+User <your user name>
+ProxyJump people.torproject.org
+IdentityFile ~/.ssh/tor
+```
+
+### Deploying
+
+```
+npm install
+npm run build
+```
+
+Do a "dry run" rsync with `-n` to check that only expected files are being changed. If you don't understand why a file would be updated, you can add the `-i` option to see the reason.
+
+```
+rsync -n --chown=:snowflake --chmod ug=rw,D+x --perms --delete -crv build/ staticiforme:/srv/snowflake.torproject.org/htdocs/
+```
+
+If it looks good, then repeat the rsync without `-n`.
+
+```
+rsync --chown=:snowflake --chmod ug=rw,D+x --perms --delete -crv build/ staticiforme:/srv/snowflake.torproject.org/htdocs/
+```
+
+You can ignore errors of the form `rsync: failed to set permissions on "<dirname>/": Operation not permitted (1)`.
+
+Then run the command to copy the new files to the live web servers:
+
+```
+ssh staticiforme 'static-update-component snowflake.torproject.org'
+```
+
+### Parameters
+
+With no parameters,
+snowflake uses the default relay `snowflake.freehaven.net:443` and
+uses automatic signaling with the default broker at
+`https://snowflake-broker.freehaven.net/`.
+
+### Reuse as a library
+
+The badge and the webextension make use of the same underlying library and
+only differ in their UI.  That same library can be produced for use with other
+interfaces, such as [Cupcake][1], by running,
+
+```
+npm install
+npm run library
+```
+
+which outputs a `./snowflake-library.js`.
+
+You'd then want to create a subclass of `UI` to perform various actions as
+the state of the snowflake changes,
+
+```
+class MyUI extends UI {
+    ...
+}
+```
+
+See `WebExtUI` in `init-webext.js` and `BadgeUI` in `init-badge.js` for
+examples.
+
+Finally, initialize the snowflake with,
+
+```
+var log = function(msg) {
+  return console.log('Snowflake: ' + msg);
+};
+var dbg = log;
+
+var config = new Config("myui");  // NOTE: Set a unique proxy type for metrics
+var ui = new MyUI();  // NOTE: Using the class defined above
+var broker = new Broker(config.brokerUrl);
+
+var snowflake = new Snowflake(config, ui, broker);
+
+snowflake.setRelayAddr(config.relayAddr);
+snowflake.beginWebRTC();
+```
+
+This minimal setup is pretty much what's currently in `init-node.js`.
+
+When configuring the snowflake, set a unique `proxyType` (first argument
+to `Config`) that will be used when recording metrics at the broker.  Also,
+it would be helpful to get in touch with the [Anti-Censorship Team][2] at the
+Tor Project to let them know about your tool.
+
+[1]: https://chrome.google.com/webstore/detail/cupcake/dajjbehmbnbppjkcnpdkaniapgdppdnc
+[2]: https://trac.torproject.org/projects/tor/wiki/org/teams/AntiCensorshipTeam
