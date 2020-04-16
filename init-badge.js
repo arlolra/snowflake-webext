@@ -129,7 +129,11 @@ var debug, snowflake, config, broker, ui, log, dbg, init, update, silenceNotific
     if (debug) { log(msg); }
   };
 
+  let retryTimeout = null;
+
   tryProbe = function() {
+    clearTimeout(retryTimeout);
+    retryTimeout = null;
     WS.probeWebsocket(config.relayAddr)
     .then(
       () => {
@@ -140,6 +144,10 @@ var debug, snowflake, config, broker, ui, log, dbg, init, update, silenceNotific
         snowflake.beginWebRTC();
       },
       () => {
+        retryTimeout = setTimeout(
+          tryProbe,
+          24 * 60 * 60 * 1000
+        );
         ui.missingFeature('popupBridgeUnreachable');
         snowflake.disable();
         log('Could not connect to bridge.');

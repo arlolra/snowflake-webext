@@ -14,6 +14,7 @@ class WebExtUI extends UI {
     this.onDisconnect = this.onDisconnect.bind(this);
     this.initStats();
     chrome.runtime.onConnect.addListener(this.onConnect);
+    this.retryTimeout = null;
   }
 
   initStats() {
@@ -26,6 +27,8 @@ class WebExtUI extends UI {
   }
 
   tryProbe() {
+    clearTimeout(this.retryTimeout);
+    this.retryTimeout = null;
     WS.probeWebsocket(config.relayAddr)
     .then(
       () => {
@@ -34,6 +37,10 @@ class WebExtUI extends UI {
       },
       () => {
         log('Could not connect to bridge.');
+        this.retryTimeout = setTimeout(
+          this.tryProbe.bind(this),
+          24 * 60 * 60 * 1000
+        );
         this.missingFeature = 'popupBridgeUnreachable';
         this.setEnabled(false);
       }
