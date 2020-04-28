@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "cldr": "^5.4.1",
-    "wrtc": "^0.0.61",
+    "wrtc": "^0.4.4",
     "ws": "^3.3.1",
     "xmlhttprequest": "^1.8.0"
   }
