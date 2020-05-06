@@ -2,7 +2,7 @@
 
 /* global require, process */
 
-var { writeFileSync, readdirSync, statSync } = require('fs');
+var { writeFileSync, readFileSync, readdirSync, statSync } = require('fs');
 var { execSync, spawn } = require('child_process');
 var cldr = require('cldr');
 
@@ -119,10 +119,19 @@ task('test', 'snowflake unit tests', function() {
   });
 });
 
+var addVersion = function(dir) {
+  var file = `${dir}/embed.html`;
+  var embed = readFileSync(file, 'utf8');
+  var pkg = require('./package.json');
+  embed = embed.replace(/<\/head>/, `  <meta name="version" content="${pkg.version}" />\n  $&`);
+  writeFileSync(file, embed, 'utf8');
+};
+
 task('build', 'build the snowflake proxy', function() {
   const outDir = 'build';
   execSync(`rm -rf ${outDir}`);
   execSync(`cp -r ${STATIC}/ ${outDir}/`);
+  addVersion(outDir);
   copyTranslations(outDir);
   concatJS(outDir, 'badge', 'embed.js', availableLangs());
   writeFileSync(`${outDir}/index.js`, translatedLangs(), 'utf8');
