@@ -141,7 +141,7 @@ task('webext', 'build the webextension', function() {
 
 task('node', 'build the node binary', function() {
   execSync('mkdir -p build');
-  concatJS('build', 'node', 'snowflake.js', '');
+  concatJS('build', 'node', 'snowflake.js', '#!/usr/bin/env node\n\n');
   console.log('Node prepared.');
 });
 
