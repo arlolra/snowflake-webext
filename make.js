@@ -145,6 +145,12 @@ task('node', 'build the node binary', function() {
   console.log('Node prepared.');
 });
 
+var updateVersion = function(file, version) {
+  var obj = require(file)
+  obj.version = version;
+  writeFileSync(file, JSON.stringify(obj, null, 2), 'utf8');
+};
+
 task('pack-webext', 'pack the webextension for deployment', function() {
   try {
     execSync(`rm -f source.zip`);
@@ -156,9 +162,8 @@ task('pack-webext', 'pack the webextension for deployment', function() {
   execSync(`git submodule update --remote`);
   var version = process.argv[3];
   console.log(version);
-  var manifest = require('./webext/manifest.json')
-  manifest.version = version;
-  writeFileSync('./webext/manifest.json', JSON.stringify(manifest, null, 2), 'utf8');
+  updateVersion('./package.json', version);
+  updateVersion('./webext/manifest.json', version);
   execSync(`git commit -am "bump version to ${version}"`);
   try {
     execSync(`git tag webext-${version}`);

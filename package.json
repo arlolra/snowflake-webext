@@ -1,6 +1,6 @@
 {
   "name": "snowflake-pt",
-  "version": "0.0.0-git",
+  "version": "0.3.0",
   "description": "Snowflake is a WebRTC pluggable transport for Tor.",
   "main": "build/snowflake.js",
   "directories": {
