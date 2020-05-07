@@ -213,6 +213,6 @@ var debug, snowflake, config, broker, ui, log, dbg, init, update, silenceNotific
       });
       init();
     });
-  }
+  };
 
 }());

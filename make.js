@@ -49,7 +49,7 @@ var concatJS = function(outDir, init, outFile, pre) {
 };
 
 var copyTranslations = function(outDir) {
-  execSync('git submodule update --init -- translation')
+  execSync('git submodule update --init -- translation');
   execSync(`cp -rf translation/* ${outDir}/_locales/`);
 };
 
@@ -65,7 +65,7 @@ var getDisplayName = function(locale) {
     return '';
   }
   return name;
-}
+};
 
 var availableLangs = function() {
   let out = "const availableLangs = new Set([\n";
@@ -155,7 +155,7 @@ task('node', 'build the node binary', function() {
 });
 
 var updateVersion = function(file, version) {
-  var obj = require(file)
+  var obj = require(file);
   obj.version = version;
   writeFileSync(file, JSON.stringify(obj, null, 2), 'utf8');
 };
@@ -211,5 +211,5 @@ if (tasks.has(cmd)) {
 
   tasks.forEach(function(value, key) {
     console.log(key + ' - ' + value.msg);
-  })
+  });
 }

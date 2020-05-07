@@ -37,7 +37,7 @@ var getLang = function() {
     return lang;
   }
   return defaultLang;
-}
+};
 
 var fill = function(n, func) {
   switch(n.nodeType) {
@@ -47,14 +47,14 @@ var fill = function(n, func) {
       if (m) {
         var val = func(m[1]);
         if (val != undefined) {
-          n.innerHTML = val
+          n.innerHTML = val;
         }
       }
       n.childNodes.forEach(c => fill(c, func));
       break;
     }
   }
-}
+};
 
 
 fetch(`./_locales/${getLang()}/messages.json`)
@@ -64,7 +64,7 @@ fetch(`./_locales/${getLang()}/messages.json`)
 })
 .then((json) => {
   var language = document.getElementById('language-switcher');
-  var lang = `${getLang()}`
+  var lang = `${getLang()}`;
   language.innerText = availableLangs[lang].name + ' (' + lang + ')';
   var messages = new Messages(json);
   fill(document.body, (m) => {

@@ -45,7 +45,7 @@ class Snowflake {
   beginWebRTC() {
     this.pollBroker();
     return this.pollTimeout = setTimeout((() => {
-      return this.beginWebRTC()
+      return this.beginWebRTC();
     }), this.pollInterval);
   }
 
