@@ -1,3 +1,5 @@
+# Snowflake
+
 This is the browser proxy component of Snowflake.
 
 ### Embedding
@@ -80,6 +82,55 @@ Then run the command to copy the new files to the live web servers:
 
 ```
 ssh staticiforme 'static-update-component snowflake.torproject.org'
+```
+
+### Publishing
+
+Making a new release involves updating a few places,
+
+1. Uploading the webextension to the Firefox Add-ons and Chrome Web Store
+2. Publishing the new version to the npm repository
+3. Deploying the badge to snowflake.torproject.org
+
+The following is a rough guide to getting that done:
+
+```
+# Clean things up
+npm run clean
+
+# Maybe check what's left behind
+git clean -n -d -x
+
+# Be sure that translation/en/messages.json has been populated with any new
+# strings that may have been merged in the recent patches.  It may take some
+# time for transifex to have updated.  You can check with the following,
+git submodule update --remote
+
+# But note that it's also run as part of the "pack-webext" script, so return
+# it to previously committed state,
+git submodule update
+
+# Bump and pack the webext, where "x.y.z" is the version being released
+npm run pack-webext x.y.z
+
+# Push the bump commit and tags
+git push origin master
+git push origin --tags
+
+# Upload the generated webext.zip (and source.zip) to the webextension stores,
+# 1. https://addons.mozilla.org/en-US/developers/addon/torproject-snowflake/versions/submit/
+# 2. https://chrome.google.com/webstore/devconsole/
+
+# This time, really clean, because we don't want any extraneous files uploaded
+git clean -f -d -x
+
+# Send it off to npm
+npm publish
+
+# Clean things up
+npm run clean
+
+# From here on out, follow the "Deploying" section of the README
 ```
 
 ### Parameters
