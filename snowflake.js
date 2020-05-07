@@ -134,7 +134,7 @@ class Snowflake {
       return null;
     }
     var pair;
-    pair = new ProxyPair(this.relayAddr, this.rateLimit, this.config.pcConfig);
+    pair = new ProxyPair(this.relayAddr, this.rateLimit, this.config);
     this.proxyPairs.push(pair);
 
     log('Snowflake IDs: ' + (this.proxyPairs.map(function(p) {

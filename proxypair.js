@@ -16,7 +16,7 @@ class ProxyPair {
   - @relayAddr is the destination relay
   - @rateLimit specifies a rate limit on traffic
   */
-  constructor(relayAddr, rateLimit, pcConfig) {
+  constructor(relayAddr, rateLimit, config) {
     this.prepareDataChannel = this.prepareDataChannel.bind(this);
     this.connectRelay = this.connectRelay.bind(this);
     this.onClientToRelayMessage = this.onClientToRelayMessage.bind(this);
@@ -26,7 +26,8 @@ class ProxyPair {
 
     this.relayAddr = relayAddr;
     this.rateLimit = rateLimit;
-    this.pcConfig = pcConfig;
+    this.config = config;
+    this.pcConfig = config.pcConfig;
     this.id = Util.genSnowflakeID();
     this.c2rSchedule = [];
     this.r2cSchedule = [];
@@ -148,8 +149,19 @@ class ProxyPair {
 
   // WebRTC --> websocket
   onClientToRelayMessage(msg) {
+    if (this.messageTimer) {
+      clearTimeout(this.messageTimer);
+    }
     dbg('WebRTC --> websocket data: ' + msg.data.byteLength + ' bytes');
     this.c2rSchedule.push(msg.data);
+
+    // if we don't receive any keep-alive messages from the client, close the
+    // connection
+    this.messageTimer = setTimeout((() => {
+      console.log("Closing stale connection.");
+      this.flush()
+      this.close()
+    }), this.config.messageTimeout);
     return this.flush();
   }
 
@@ -172,6 +184,10 @@ class ProxyPair {
     if (this.timer) {
       clearTimeout(this.timer);
       this.timer = 0;
+    }
+    if (this.messageTimer) {
+      clearTimeout(this.messageTimer);
+      this.messageTimer = 0;
     }
     if (this.webrtcIsReady()) {
       this.client.close();
@@ -244,6 +260,7 @@ ProxyPair.prototype.client = null; // WebRTC Data channel
 ProxyPair.prototype.relay = null; // websocket
 
 ProxyPair.prototype.timer = 0;
+ProxyPair.prototype.messageTimer = 0;
 ProxyPair.prototype.flush_timeout_id = null;
 
 ProxyPair.prototype.onCleanup = null;

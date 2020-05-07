@@ -31,6 +31,9 @@ Config.prototype.pollAdjustment = 300.0 * 1000;
 // Timeout after sending answer before datachannel is opened
 Config.prototype.datachannelTimeout = 20 * 1000;
 
+// Timeout to close proxypair if no messages are sent
+Config.prototype.messageTimeout = 30 * 1000;
+
 Config.prototype.maxNumClients = 1;
 
 Config.prototype.proxyType = "";
