@@ -37,7 +37,12 @@ npm install
 npm test
 ```
 
-To run locally, start an http server in `build/` and navigate to `/embed.html`.
+To run locally, first build it with:
+
+``` 
+npm run build 
+```
+Then start an HTTP server in `build/` and navigate to `/embed.html`.
 
 ### Preparing to deploy
 
