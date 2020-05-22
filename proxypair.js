@@ -159,8 +159,8 @@ class ProxyPair {
     // connection
     this.messageTimer = setTimeout((() => {
       console.log("Closing stale connection.");
-      this.flush()
-      this.close()
+      this.flush();
+      this.close();
     }), this.config.messageTimeout);
     return this.flush();
   }
