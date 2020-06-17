@@ -17,10 +17,12 @@ class Broker {
   constructor(config) {
     this.getClientOffer = this.getClientOffer.bind(this);
     this._postRequest = this._postRequest.bind(this);
+    this.setNATType = this.setNATType.bind(this);
 
     this.config = config;
     this.url = config.brokerUrl;
     this.clients = 0;
+    this.natType = "unknown";
     if (0 === this.url.indexOf('localhost', 0)) {
       // Ensure url has the right protocol + trailing slash.
       this.url = 'http://' + this.url;
@@ -64,7 +66,7 @@ class Broker {
         }
       };
       this._xhr = xhr; // Used by spec to fake async Broker interaction
-      var data = {"Version": "1.1", "Sid": id, "Type": this.config.proxyType};
+      var data = {"Version": "1.1", "Sid": id, "Type": this.config.proxyType, "NAT": this.natType};
       return this._postRequest(xhr, 'proxy', JSON.stringify(data));
     });
   }
@@ -91,6 +93,10 @@ class Broker {
     };
     var data = {"Version": "1.0", "Sid": id, "Answer": JSON.stringify(answer)};
     return this._postRequest(xhr, 'answer', JSON.stringify(data));
+  }
+
+  setNATType(natType) {
+    this.natType = natType;
   }
 
   // urlSuffix for the broker is different depending on what action

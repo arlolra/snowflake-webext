@@ -36,26 +36,24 @@ class FakeBroker {
       return {};
     });
   }
+  setNATType(natType) {
+  }
 }
 
 describe('Snowflake', function() {
 
   it('constructs correctly', function() {
     var s;
-    s = new Snowflake(config, ui, {
-      fake: 'broker'
-    });
+    s = new Snowflake(config, ui, new FakeBroker());
     expect(s.rateLimit).not.toBeNull();
-    expect(s.broker).toEqual({
-      fake: 'broker'
-    });
+    expect(s.broker).toEqual(new FakeBroker());
     expect(s.ui).not.toBeNull();
     expect(s.retries).toBe(0);
   });
 
   it('sets relay address correctly', function() {
     var s;
-    s = new Snowflake(config, ui, null);
+    s = new Snowflake(config, ui, new FakeBroker());
     s.setRelayAddr('foo');
     expect(s.relayAddr).toEqual('foo');
   });

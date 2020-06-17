@@ -21,6 +21,7 @@ class Snowflake {
     this.config = config;
     this.ui = ui;
     this.broker = broker;
+    this.broker.setNATType(ui.natType);
     this.proxyPairs = [];
     this.pollInterval = this.config.defaultBrokerPollInterval;
     if (void 0 === this.config.rateLimitBytes) {
@@ -80,6 +81,9 @@ class Snowflake {
           this.pollInterval =
                 Math.min(this.pollInterval + this.config.pollAdjustment,
                   this.config.slowestBrokerPollInterval);
+          // assume restricted NAT
+          this.ui.natType = "restricted";
+          this.broker.setNATType(this.ui.natType);
         } else {
           // decrease poll interval
           this.pollInterval =

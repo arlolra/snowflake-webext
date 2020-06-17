@@ -13,6 +13,7 @@ class WebExtUI extends UI {
     this.onMessage = this.onMessage.bind(this);
     this.onDisconnect = this.onDisconnect.bind(this);
     this.initStats();
+    this.initNATType();
     chrome.runtime.onConnect.addListener(this.onConnect);
   }
 
@@ -23,6 +24,14 @@ class WebExtUI extends UI {
       this.stats.splice(24);
       this.postActive();
     }), 60 * 60 * 1000);
+  }
+
+  initNATType() {
+    this.natType = "unknown";
+    // reset NAT type every 24 hours in case proxy location changed
+    setInterval((() => {
+      this.natType = "unknown";
+    }), 24 * 60 * 60 * 1000);
   }
 
   tryProbe() {
