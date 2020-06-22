@@ -40,14 +40,14 @@ describe('Broker', function() {
       spyOn(b, '_postRequest').and.callFake(function() {
         b._xhr.readyState = b._xhr.DONE;
         b._xhr.status = Broker.CODE.OK;
-        b._xhr.responseText = '{"Status":"client match","Offer":"fake offer"}';
+        b._xhr.responseText = '{"Status":"client match","Offer":"fake offer","NAT":"unknown"}';
         return b._xhr.onreadystatechange();
       });
       poll = b.getClientOffer();
       expect(poll).not.toBeNull();
       expect(b._postRequest).toHaveBeenCalled();
-      return poll.then(function(desc) {
-        expect(desc).toEqual('fake offer');
+      return poll.then(function(resp) {
+        expect(resp.Offer).toEqual('fake offer');
         return done();
       }).catch(function() {
         fail('should not reject on Broker.CODE.OK');

@@ -52,7 +52,7 @@ class Broker {
           case Broker.CODE.OK:
             var response = JSON.parse(xhr.responseText);
             if (response.Status == Broker.STATUS.MATCH) {
-              return fulfill(response.Offer); // Should contain offer.
+              return fulfill(response); // Should contain offer.
             } else if (response.Status == Broker.STATUS.TIMEOUT) {
               return reject(Broker.MESSAGE.TIMEOUT);
             } else {
@@ -66,7 +66,7 @@ class Broker {
         }
       };
       this._xhr = xhr; // Used by spec to fake async Broker interaction
-      var data = {"Version": "1.1", "Sid": id, "Type": this.config.proxyType, "NAT": this.natType};
+      var data = {"Version": "1.2", "Sid": id, "Type": this.config.proxyType, "NAT": this.natType};
       return this._postRequest(xhr, 'proxy', JSON.stringify(data));
     });
   }

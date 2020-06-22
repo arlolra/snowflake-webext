@@ -68,8 +68,9 @@ class Snowflake {
     }
     this.ui.setStatus(msg);
     recv = this.broker.getClientOffer(pair.id);
-    recv.then((desc) => {
-      if (!this.receiveOffer(pair, desc)) {
+    recv.then((resp) => {
+      var clientNAT = resp.NAT;
+      if (!this.receiveOffer(pair, resp.Offer)) {
         return pair.close();
       }
       //set a timeout for channel creation
@@ -81,8 +82,11 @@ class Snowflake {
           this.pollInterval =
                 Math.min(this.pollInterval + this.config.pollAdjustment,
                   this.config.slowestBrokerPollInterval);
-          // assume restricted NAT
-          this.ui.natType = "restricted";
+          // if we fail to connect to a restricted client, assume restricted NAT
+          if (clientNAT == "restricted"){
+            this.ui.natType = "restricted";
+            console.log("Learned NAT type: restricted");
+          }
           this.broker.setNATType(this.ui.natType);
         } else {
           // decrease poll interval
