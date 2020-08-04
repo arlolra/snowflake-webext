@@ -1,4 +1,5 @@
 /* exported Util, Params, DummyRateLimit */
+/* global PeerConnection */
 
 /*
 A JavaScript WebRTC snowflake proxy
@@ -20,6 +21,35 @@ class Util {
     return navigator.cookieEnabled;
   }
 
+  // returns a promise that fullfills to "restricted" if the
+  // mapping is symmetric, and we know it's a restrictive NAT,
+  // and fullfills to "unknown" if the mapping is not
+  // symmetric.
+  static checkNATType() {
+    return new Promise((fulfill, reject) => {
+      let port = null;
+      let pc = new PeerConnection({iceServers: [
+        {urls: 'stun:stun1.l.google.com:19302'},
+        {urls: 'stun:stun2.l.google.com:19302'}
+      ]});
+      pc.createDataChannel("NAT test");
+      pc.onicecandidate = function(e) {
+        if (e.candidate) {
+          let p = Parse.portFromCandidate(e.candidate.candidate);
+          if (port == null) port = p;
+          else if (p != null && p != port) fulfill("restricted");
+        } else { // done parsing candidates
+          fulfill("unknown");
+        }
+      };
+      pc.createOffer().then((offer) => {
+        pc.setLocalDescription(offer);
+      }).catch((e) => {
+        console.log(e);
+        reject("Error checking NAT type");
+      });
+    });
+  }
 }
 
 
@@ -116,6 +146,18 @@ class Parse {
         return m[1];
       }
     }
+  }
+
+  // Parse the mapped port out of an ice candidate returned from the
+  // onicecandidate callback
+  static portFromCandidate(c) {
+    var m, pattern;
+    pattern = /(?:[\d.]+|[0-9A-Fa-f:.]+) (\d+) typ srflx/m;
+    m = pattern.exec(c);
+    if (m != null) {
+      return m[1];
+    }
+    return null;
   }
 
 }

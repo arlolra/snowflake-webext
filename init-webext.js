@@ -28,10 +28,14 @@ class WebExtUI extends UI {
 
   initNATType() {
     this.natType = "unknown";
-    // reset NAT type every 24 hours in case proxy location changed
-    setInterval((() => {
-      this.natType = "unknown";
-    }), 24 * 60 * 60 * 1000);
+    (function loop(_this) {
+      Util.checkNATType().then((type) => {
+        console.log("Setting NAT type: " + type);
+        _this.natType = type;
+      }).catch((e) => console.log(e));
+      // reset NAT type every 24 hours in case proxy location changed
+      setTimeout(_this.initNATType, 24 * 60 * 60 * 1000);
+    })(this);
   }
 
   tryProbe() {

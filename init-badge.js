@@ -105,7 +105,7 @@ function getLang() {
   return defaultLang;
 }
 
-var debug, snowflake, config, broker, ui, log, dbg, init, update, silenceNotifications, query, tryProbe;
+var debug, snowflake, config, broker, ui, log, dbg, init, update, initNATType, silenceNotifications, query, tryProbe;
 
 (function() {
 
@@ -147,6 +147,18 @@ var debug, snowflake, config, broker, ui, log, dbg, init, update, silenceNotific
     );
   };
 
+  initNATType = function() {
+    this.natType = "unknown";
+    (function loop(_this) {
+      Util.checkNATType().then((type) => {
+        console.log("Setting NAT type: " + type);
+        _this.natType = type;
+      }).catch((e) => console.log(e));
+      // reset NAT type every 24 hours in case proxy location changed
+      setTimeout(_this.initNATType, 24 * 60 * 60 * 1000);
+    })(this);
+  };
+
   update = function() {
     const cookies = Parse.cookie(document.cookie);
     if (cookies[COOKIE_NAME] !== '1') {
@@ -181,6 +193,8 @@ var debug, snowflake, config, broker, ui, log, dbg, init, update, silenceNotific
     snowflake = new Snowflake(config, ui, broker);
     log('== snowflake proxy ==');
     update();
+
+    initNATType();
   };
 
   // Notification of closing tab with active proxy.

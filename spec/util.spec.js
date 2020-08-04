@@ -210,7 +210,31 @@ describe('Parse', function() {
     });
 
   });
+  describe('portFromCandidate', function() {
 
+    var testCases = [
+      {
+        candidate: "candidate:0 1 UDP 2122252543 aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa.local 54297 typ host",
+        expected: null
+      },
+      {
+        candidate: "candidate:1 1 UDP 1686052863 1.2.3.4 54297 typ srflx raddr 0.0.0.0 rport 0",
+        expected: "54297"
+      },
+      {
+        candidate: "candidate:1 1 UDP 1686052863 2a07:2e47:ffff:ffff:ffff:ffff:ffff:ffff 54297 typ srflx raddr 0.0.0.0 rport 0",
+        expected: "54297"
+      }
+    ];
+    it('parses port', function() {
+      var i, len, ref, ref1, results, test;
+      results = [];
+      for (i = 0, len = testCases.length; i < len; i++) {
+        test = testCases[i];
+        expect(Parse.portFromCandidate(test.candidate)).toEqual(test.expected);
+      }
+    });
+  });
 });
 
 describe('Params', function() {
