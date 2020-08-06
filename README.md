@@ -47,7 +47,7 @@ Then start an HTTP server in `build/` and navigate to `/embed.html`.
 ### Preparing to deploy
 
 Background information:
- * https://bugs.torproject.org/23947#comment:8
+ * https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/issues/23947#note_2591838
  * https://help.torproject.org/tsa/doc/static-sites/
  * https://help.torproject.org/tsa/doc/ssh-jump-host/
 
