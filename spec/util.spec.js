@@ -137,6 +137,15 @@ describe('Parse', function() {
         expected: '224.2.17.12'
       },
       {
+        // local addresses only
+        sdp: "v=0\no=jdoe 2890844526 2890842807 IN IP4 10.47.16.5\ns=SDP Seminar\ni=A Seminar on the session description protocol\nu=http://www.example.com/seminars/sdp.pdf\ne=j.doe@example.com (Jane Doe)\nc=IN IP4 10.47.16.5\nt=2873397496 2873404696\na=recvonly\nm=audio 49170 RTP/AVP 0\nm=video 51372 RTP/AVP 99\na=rtpmap:99 h263-1998/90000",
+        expected: void 0
+      },
+      {
+        sdp: "v=0\no=jdoe 2890844526 2890842807 IN IP4 10.47.16.5\ns=SDP Seminar\ni=A Seminar on the session description protocol\nu=http://www.example.com/seminars/sdp.pdf\ne=j.doe@example.com (Jane Doe)\nc=IN IP4 10.47.16.5\na=candidate:3581707038 1 udp 2122260223 192.168.0.1 54653 typ host generation 0 network-id 1 network-cost 50\na=candidate:2617212910 1 tcp 1518280447 192.168.0.1 59673 typ host tcptype passive generation 0 network-id 1 network-cost 50\na=candidate:2082671819 1 udp 1686052607 1.2.3.4 54653 typ srflx raddr 192.168.0.1 rport 54653 generation 0 network-id 1 network-cost 50\nt=2873397496 2873404696\na=recvonly\nm=audio 49170 RTP/AVP 0\nm=video 51372 RTP/AVP 99\na=rtpmap:99 h263-1998/90000",
+        expected: '1.2.3.4'
+      },
+      {
         // Missing c= line
         sdp: "v=0\no=jdoe 2890844526 2890842807 IN IP4 10.47.16.5\ns=SDP Seminar\ni=A Seminar on the session description protocol\nu=http://www.example.com/seminars/sdp.pdf\ne=j.doe@example.com (Jane Doe)\nt=2873397496 2873404696\na=recvonly\nm=audio 49170 RTP/AVP 0\nm=video 51372 RTP/AVP 99\na=rtpmap:99 h263-1998/90000",
         expected: void 0
@@ -232,6 +241,111 @@ describe('Parse', function() {
       for (i = 0, len = testCases.length; i < len; i++) {
         test = testCases[i];
         expect(Parse.portFromCandidate(test.candidate)).toEqual(test.expected);
+      }
+    });
+  });
+  describe('isRemoteIP', function() {
+
+    var testCases = [
+      {
+        ip: "127.0.0.1",
+        expected: false
+      },
+      {
+        ip: "::1",
+        expected: false
+      },
+      {
+        ip: "0::1",
+        expected: false
+      },
+      {
+        ip: "192.168.1.1",
+        expected: false
+      },
+      {
+        ip: "10.0.0.0",
+        expected: false
+      },
+      {
+        ip: "172.16.1.1",
+        expected: false
+      },
+      {
+        ip: "172.15.1.1",
+        expected: true
+      },
+      {
+        ip: "100.63.1.1",
+        expected: true
+      },
+      {
+        ip: "100.64.1.1",
+        expected: false
+      },
+      {
+        ip: "100.127.255.255",
+        expected: false
+      },
+      {
+        ip: "100.128.0.0",
+        expected: true
+      },
+      {
+        ip: "169.254.0.0",
+        expected: false
+      },
+      {
+        ip: "169.244.0.1",
+        expected: true
+      },
+      {
+        ip: "fc00::",
+        expected: false
+      },
+      {
+        ip: "fdff::0",
+        expected: false
+      },
+      {
+        ip: "ff00::0",
+        expected: true
+      },
+      {
+        ip: "0.0.0.0",
+        expected: false
+      },
+      {
+        ip: "::",
+        expected: false
+      },
+      {
+        ip: "::0",
+        expected: false
+      },
+      {
+        ip: "0::0",
+        expected: false
+      },
+      {
+        ip: "0::",
+        expected: false
+      },
+      {
+        ip: "ff15::101",
+        expected: true
+      },
+      {
+        ip: "1.2.3.4",
+        expected: true
+      }
+    ];
+    it('finds local addresses', function() {
+      var i, len, ref, ref1, results, test;
+      results = [];
+      for (i = 0, len = testCases.length; i < len; i++) {
+        test = testCases[i];
+        expect(Parse.isRemoteIP(test.ip)).toEqual(test.expected);
       }
     });
   });

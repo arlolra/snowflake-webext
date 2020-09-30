@@ -133,17 +133,26 @@ class Parse {
     return count * multiplier;
   }
 
-  // Parse a connection-address out of the "c=" Connection Data field of a
-  // session description. Return undefined if none is found.
+  //Parse a remote connection-address out of the "c=" Connection Data field
+  // or the "a=" attribute fields of the session description.
+  // Return undefined if none is found.
   // https://tools.ietf.org/html/rfc4566#section-5.7
+  // https://tools.ietf.org/html/rfc5245#section-15
   static ipFromSDP(sdp) {
     var i, len, m, pattern, ref;
-    ref = [/^c=IN IP4 ([\d.]+)(?:(?:\/\d+)?\/\d+)?(:? |$)/m, /^c=IN IP6 ([0-9A-Fa-f:.]+)(?:\/\d+)?(:? |$)/m];
+    console.log(sdp);
+    ref = [
+      /^a=candidate:[a-zA-Z0-9+/]+ \d+ udp \d+ ([\d.]+) /mg,
+      /^a=candidate:[a-zA-Z0-9+/]+ \d+ udp \d+ ([0-9A-Fa-f:.]+) /mg,
+      /^c=IN IP4 ([\d.]+)(?:(?:\/\d+)?\/\d+)?(:? |$)/mg,
+      /^c=IN IP6 ([0-9A-Fa-f:.]+)(?:\/\d+)?(:? |$)/mg
+    ];
     for (i = 0, len = ref.length; i < len; i++) {
       pattern = ref[i];
       m = pattern.exec(sdp);
-      if (m != null) {
-        return m[1];
+      while (m != null) {
+        if(Parse.isRemoteIP(m[1])) return m[1];
+        m = pattern.exec(sdp);
       }
     }
   }
@@ -158,6 +167,30 @@ class Parse {
       return m[1];
     }
     return null;
+  }
+
+  // Determine whether an IP address is a local, unspecified, or loopback address
+  static isRemoteIP(ip) {
+    if (ip.includes(":")) {
+      var ip6 = ip.split(':');
+      // Loopback address
+      var loopback = /^(?:0*:)*?:?0*1$/m;
+      // Unspecified address
+      var unspecified = /^(?:0*:)*?:?0*$/m;
+      // Local IPv6 addresses are defined in https://tools.ietf.org/html/rfc4193
+      return !((loopback.exec(ip) != null) || (unspecified.exec(ip) != null) ||
+        (parseInt(ip6[0],16)&0xfe00) == 0xfc00);
+    }
+
+    // Local IPv4 addresses are defined in https://tools.ietf.org/html/rfc1918
+    var ip4 = ip.split('.');
+    return !(ip4[0] == 10 || ip4[0] == 127 || ip == "0.0.0.0" ||
+      (ip4[0] == 172 && (ip4[1]&0xf0) == 16) ||
+      (ip4[0] == 192 && ip4[1] == 168) ||
+      // Carrier-Grade NAT as per https://tools.ietf.org/htm/rfc6598
+      (ip4[0] == 100 && (ip4[1]&0xc0) == 64) ||
+      // Dynamic Configuration as per https://tools.ietf.org/htm/rfc3927
+      (ip4[0] == 169 && ip4[1] == 254));
   }
 
 }
