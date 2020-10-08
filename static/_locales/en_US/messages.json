@@ -63,16 +63,16 @@
     "message": "Reporting Bugs"
   },
   "fileBug": {
-    "message": "If you encounter problems with Snowflake as a client or a proxy, please consider filing a bug.  To do so, you will have to,"
+    "message": "If you encounter problems with Snowflake as a client or a proxy, please consider filing a bug report.  There are two ways to file a bug report:"
   },
   "sharedAccount": {
-    "message": "Either <a href=\"https://trac.torproject.org/projects/tor/register\">create an account</a> or <a href=\"https://trac.torproject.org/projects/tor/login\">log in</a> using the shared <b>cypherpunks</b> account with password <b>writecode</b>."
+    "message": "Edit the <a href=\"https://pad.riseup.net/p/tor-anti-censorship-bugs-keep\">public bug-reporting pad</a> of the anti-censorship team."
   },
   "bugTracker": {
-    "message": "<a href=\"https://trac.torproject.org/projects/tor/newticket?component=Circumvention%2FSnowflake\">File a ticket</a> using our bug tracker."
+    "message": "<a href=\"https://gitlab.torproject.org/\">Request an account</a> at the Tor Project GitLab, then <a href=\"https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/issues\">open a new issue</a> in the Snowflake project."
   },
   "descriptive": {
-    "message": "Please try to be as descriptive as possible with your ticket and if possible include log messages that will help us reproduce the bug. Consider adding keywords <em>snowflake-webextension</em> or <em>snowflake-client</em> to let us know how which part of the Snowflake system is experiencing problems."
+    "message": "Please try to be as descriptive as possible with your ticket and if possible include log messages that will help us reproduce the bug."
   },
   "embed": {
     "message": "Embed"
