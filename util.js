@@ -1,5 +1,5 @@
 /* exported Util, Params, DummyRateLimit */
-/* global PeerConnection */
+/* global PeerConnection, Config */
 
 /*
 A JavaScript WebRTC snowflake proxy
@@ -21,33 +21,63 @@ class Util {
     return navigator.cookieEnabled;
   }
 
-  // returns a promise that fullfills to "restricted" if the
-  // mapping is symmetric, and we know it's a restrictive NAT,
-  // and fullfills to "unknown" if the mapping is not
-  // symmetric.
-  static checkNATType() {
+  // returns a promise that fullfills to "restricted" if we
+  // fail to make a test connection to a known restricted
+  // NAT, "unrestricted" if the test connection fails, and
+  // "unknown" if we fail to reach the probe test server
+  static checkNATType(timeout) {
     return new Promise((fulfill, reject) => {
-      let port = null;
+      let open = false;
       let pc = new PeerConnection({iceServers: [
-        {urls: 'stun:stun1.l.google.com:19302'},
-        {urls: 'stun:stun2.l.google.com:19302'}
+        {urls: 'stun:stun1.l.google.com:19302'}
       ]});
-      pc.createDataChannel("NAT test");
-      pc.onicecandidate = function(e) {
-        if (e.candidate) {
-          let p = Parse.portFromCandidate(e.candidate.candidate);
-          if (port == null) port = p;
-          else if (p != null && p != port) fulfill("restricted");
-        } else { // done parsing candidates
-          fulfill("unknown");
-        }
+      let channel = pc.createDataChannel("NAT test");
+      channel.onopen = function() {
+        open = true;
+        fulfill("unrestricted");
+        channel.close();
+        pc.close();
       };
-      pc.createOffer().then((offer) => {
-        pc.setLocalDescription(offer);
-      }).catch((e) => {
+      pc.createOffer()
+      .then((offer) =>  pc.setLocalDescription(offer))
+      .then(() => Util.sendOffer(pc.localDescription))
+      .then((answer) => pc.setRemoteDescription(JSON.parse(answer)))
+      .catch((e) => {
         console.log(e);
         reject("Error checking NAT type");
       });
+      setTimeout(() => {if(!open) fulfill("restricted");}, timeout);
+    });
+  }
+
+  // Assumes getClientOffer happened, and a WebRTC SDP answer has been generated.
+  // Sends it back to the broker, which passes it back to the original client.
+  static sendOffer(offer) {
+    return new Promise((fulfill, reject) => {
+      var xhr;
+      xhr = new XMLHttpRequest();
+      xhr.timeout = 10 * 1000;
+      xhr.onreadystatechange = function() {
+        if (xhr.DONE !== xhr.readyState) {
+          return;
+        }
+        switch (xhr.status) {
+          case 200:
+            var response = JSON.parse(xhr.responseText);
+            return fulfill(response.Answer); // Should contain offer.
+          default:
+            console.log('Probe ERROR: Unexpected ' + xhr.status + ' - ' + xhr.statusText);
+            return reject('Failed to get answer from probe service');
+        }
+      };
+      var data = {"Status": "client match", "Offer": JSON.stringify(offer)};
+      try {
+        xhr.open('POST', Config.PROBEURL);
+      } catch (error) {
+        console.log('Signaling Server: exception while connecting: ' + error.message);
+        return reject('unable to connect to signaling server');
+      }
+      return xhr.send(JSON.stringify(data));
     });
   }
 }

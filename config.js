@@ -46,3 +46,5 @@ Config.prototype.pcConfig = {
     }
   ]
 };
+
+Config.PROBEURL = "https://snowflake-broker.torproject.net:8443/probe";

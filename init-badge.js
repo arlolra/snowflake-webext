@@ -150,10 +150,13 @@ var debug, snowflake, config, broker, ui, log, dbg, init, update, initNATType, s
   initNATType = function() {
     this.natType = "unknown";
     (function loop(_this) {
-      Util.checkNATType().then((type) => {
+      Util.checkNATType(config.datachannelTimeout).then((type) => {
         console.log("Setting NAT type: " + type);
         _this.natType = type;
-      }).catch((e) => console.log(e));
+      }).catch((e) => {
+        console.log(e);
+        _this.natType = "unknown";
+      });
       // reset NAT type every 24 hours in case proxy location changed
       setTimeout(_this.initNATType, 24 * 60 * 60 * 1000);
     })(this);
