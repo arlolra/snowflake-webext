@@ -41,12 +41,13 @@ class Util {
       pc.createOffer()
       .then((offer) =>  pc.setLocalDescription(offer))
       .then(() => Util.sendOffer(pc.localDescription))
-      .then((answer) => pc.setRemoteDescription(JSON.parse(answer)))
-      .catch((e) => {
+      .then((answer) => {
+        setTimeout(() => {if(!open) fulfill("restricted");}, timeout);
+        pc.setRemoteDescription(JSON.parse(answer));
+      }).catch((e) => {
         console.log(e);
         reject("Error checking NAT type");
       });
-      setTimeout(() => {if(!open) fulfill("restricted");}, timeout);
     });
   }
 
@@ -56,7 +57,7 @@ class Util {
     return new Promise((fulfill, reject) => {
       var xhr;
       xhr = new XMLHttpRequest();
-      xhr.timeout = 10 * 1000;
+      xhr.timeout = 30 * 1000;
       xhr.onreadystatechange = function() {
         if (xhr.DONE !== xhr.readyState) {
           return;
