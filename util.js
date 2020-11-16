@@ -38,15 +38,24 @@ class Util {
         channel.close();
         pc.close();
       };
+      pc.onicecandidate = (evt) => {
+        if (evt.candidate == null) {
+          //ice gathering is finished
+          Util.sendOffer(pc.localDescription)
+          .then((answer) => {
+            setTimeout(() => {if(!open) fulfill("restricted");}, timeout);
+            pc.setRemoteDescription(JSON.parse(answer));
+          }).catch((e) => {
+            console.log(e);
+            reject("Error receiving probetest answer");
+          });
+        }
+      };
       pc.createOffer()
       .then((offer) =>  pc.setLocalDescription(offer))
-      .then(() => Util.sendOffer(pc.localDescription))
-      .then((answer) => {
-        setTimeout(() => {if(!open) fulfill("restricted");}, timeout);
-        pc.setRemoteDescription(JSON.parse(answer));
-      }).catch((e) => {
+      .catch((e) => {
         console.log(e);
-        reject("Error checking NAT type");
+        reject("Error creating offer for probetest");
       });
     });
   }
