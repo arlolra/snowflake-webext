@@ -70,7 +70,7 @@ var getDisplayName = function(locale) {
 var getDirs = function() {
   let dirs = readdirSync('translation').filter((f) => {
     const s = statSync(`translation/${f}`);
-    return s.isDirectory();
+    return s.isDirectory() && !/^\./.test(f);
   });
   dirs.push('en_US');
   dirs.sort();
