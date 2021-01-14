@@ -67,14 +67,19 @@ var getDisplayName = function(locale) {
   return name;
 };
 
-var availableLangs = function() {
-  let out = "const availableLangs = new Set([\n";
+var getDirs = function() {
   let dirs = readdirSync('translation').filter((f) => {
     const s = statSync(`translation/${f}`);
     return s.isDirectory();
   });
   dirs.push('en_US');
   dirs.sort();
+  return dirs;
+};
+
+var availableLangs = function() {
+  let out = "const availableLangs = new Set([\n";
+  let dirs = getDirs();
   dirs = dirs.map(d => `  '${d}',`);
   out += dirs.join("\n");
   out += "\n]);\n\n";
@@ -83,12 +88,7 @@ var availableLangs = function() {
 
 var translatedLangs = function() {
   let out = "const availableLangs = {\n";
-  let dirs = readdirSync('translation').filter((f) => {
-    const s = statSync(`translation/${f}`);
-    return s.isDirectory();
-  });
-  dirs.push('en_US');
-  dirs.sort();
+  let dirs = getDirs();
   dirs = dirs.map(d => `'${d}': {"name": '${getDisplayName(d)}'},`);
   out += dirs.join("\n");
   out += "\n};\n\n";
