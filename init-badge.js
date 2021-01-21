@@ -157,7 +157,7 @@ var debug, snowflake, config, broker, ui, log, dbg, init, update, initNATType, s
         console.log(e);
       });
       // reset NAT type every 24 hours in case proxy location changed
-      setTimeout(_this.initNATType, 24 * 60 * 60 * 1000);
+      setTimeout(_this.initNATType, config.natCheckInterval);
     })(this);
   };
 

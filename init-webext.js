@@ -34,8 +34,8 @@ class WebExtUI extends UI {
       }).catch((e) => {
         console.log(e);
       });
-      // reset NAT type every 24 hours in case proxy location changed
-      setTimeout(_this.initNATType, 24 * 60 * 60 * 1000);
+      // reset NAT type every 2 days in case proxy location changed
+      setTimeout(_this.initNATType, config.natCheckInterval);
     })(this);
   }
 

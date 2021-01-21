@@ -28,6 +28,9 @@ Config.prototype.defaultBrokerPollInterval = 60.0 * 1000; //1 poll every minutes
 Config.prototype.slowestBrokerPollInterval = 6 * 60 * 60.0 * 1000; //1 poll every 6 hours
 Config.prototype.pollAdjustment = 100.0 * 1000;
 
+// Recheck our NAT type once every 2 days
+Config.prototype.natCheckInterval = 2 * 24 * 60 * 60 * 1000;
+
 // Timeout after sending answer before datachannel is opened
 Config.prototype.datachannelTimeout = 20 * 1000;
 
