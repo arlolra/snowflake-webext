@@ -33,7 +33,6 @@ class WebExtUI extends UI {
         _this.natType = type;
       }).catch((e) => {
         console.log(e);
-        _this.natType = "unknown";
       });
       // reset NAT type every 24 hours in case proxy location changed
       setTimeout(_this.initNATType, 24 * 60 * 60 * 1000);
