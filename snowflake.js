@@ -68,6 +68,9 @@ class Snowflake {
       msg += '[retries: ' + this.retries + ']';
     }
     this.ui.setStatus(msg);
+    //update NAT type
+    console.log("NAT type: "+ this.ui.natType);
+    this.broker.setNATType(this.ui.natType);
     recv = this.broker.getClientOffer(pair.id);
     recv.then((resp) => {
       var clientNAT = resp.NAT;

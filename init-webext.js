@@ -25,18 +25,19 @@ class WebExtUI extends UI {
     }), 60 * 60 * 1000);
   }
 
+  checkNAT() {
+    Util.checkNATType(config.datachannelTimeout).then((type) => {
+      console.log("Setting NAT type: " + type);
+      this.natType = type;
+    }).catch((e) => {
+      console.log(e);
+    });
+  }
+
   initNATType() {
     this.natType = "unknown";
-    (function loop(_this) {
-      Util.checkNATType(config.datachannelTimeout).then((type) => {
-        console.log("Setting NAT type: " + type);
-        _this.natType = type;
-      }).catch((e) => {
-        console.log(e);
-      });
-      // reset NAT type every 2 days in case proxy location changed
-      setTimeout(_this.initNATType, config.natCheckInterval);
-    })(this);
+    this.checkNAT();
+    return setInterval(() => {this.checkNAT();}, config.natCheckInterval);
   }
 
   tryProbe() {
