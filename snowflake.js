@@ -23,6 +23,7 @@ class Snowflake {
     this.broker = broker;
     this.broker.setNATType(ui.natType);
     this.proxyPairs = [];
+    this.natFailures = 0;
     this.pollInterval = this.config.defaultBrokerPollInterval;
     if (void 0 === this.config.rateLimitBytes) {
       this.rateLimit = new DummyRateLimit();
@@ -82,10 +83,12 @@ class Snowflake {
           this.pollInterval =
                 Math.min(this.pollInterval + this.config.pollAdjustment,
                   this.config.slowestBrokerPollInterval);
-          // if we fail to connect to a restricted client, assume restricted NAT
-          if (clientNAT == "restricted"){
+          // if we fail to connect to a restricted client 3 times in
+          // a row, assume we have a restricted NAT
+          if ((clientNAT == "restricted") && (this.natFailures > 3)){
             this.ui.natType = "restricted";
             console.log("Learned NAT type: restricted");
+            this.natFailures = 0;
           }
           this.broker.setNATType(this.ui.natType);
         } else {
@@ -93,6 +96,7 @@ class Snowflake {
           this.pollInterval =
                 Math.max(this.pollInterval - this.config.pollAdjustment,
                   this.config.defaultBrokerPollInterval);
+          this.natFailures = 0;
         }
         return;
       }), this.config.datachannelTimeout);
