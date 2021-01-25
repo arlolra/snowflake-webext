@@ -86,9 +86,12 @@ class Snowflake {
           this.pollInterval =
                 Math.min(this.pollInterval + this.config.pollAdjustment,
                   this.config.slowestBrokerPollInterval);
+          if (clientNAT == "restricted") {
+            this.natFailures++;
+          }
           // if we fail to connect to a restricted client 3 times in
           // a row, assume we have a restricted NAT
-          if ((clientNAT == "restricted") && (this.natFailures > 3)){
+          if (this.natFailures >= 3){
             this.ui.natType = "restricted";
             console.log("Learned NAT type: restricted");
             this.natFailures = 0;
