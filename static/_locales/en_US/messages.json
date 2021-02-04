@@ -66,10 +66,10 @@
     "message": "If you encounter problems with Snowflake as a client or a proxy, please consider filing a bug report.  There are two ways to file a bug report:"
   },
   "sharedAccount": {
-    "message": "Edit the <a href=\"https://pad.riseup.net/p/tor-anti-censorship-bugs-keep\">public bug-reporting pad</a> of the anti-censorship team."
+    "message": "File an <a href=\"https://anonticket.onionize.space/\">anonymous ticket</a> by generating an identifier and logging in with it.  Then, find the Snowflake project in the List of all projects and create a new issue."
   },
   "bugTracker": {
-    "message": "<a href=\"https://gitlab.torproject.org/\">Request an account</a> at the Tor Project GitLab, then <a href=\"https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/issues\">open a new issue</a> in the Snowflake project."
+    "message": "<a href=\"https://gitlab.onionize.space/\">Request an account</a> at the Tor Project GitLab, then <a href=\"https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/issues\">open a new issue</a> in the Snowflake project."
   },
   "descriptive": {
     "message": "Please try to be as descriptive as possible with your ticket and if possible include log messages that will help us reproduce the bug."
