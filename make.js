@@ -5,6 +5,7 @@
 var { writeFileSync, readFileSync, readdirSync, statSync } = require('fs');
 var { execSync, spawn } = require('child_process');
 var cldr = require('cldr');
+var domino = require('domino');
 
 // All files required.
 var FILES = [
@@ -94,6 +95,37 @@ var translatedLangs = function() {
   out += "\n};\n\n";
   return out;
 };
+
+// FIXME: This is duplicated from index.js and should be shared in some way
+var fill = function(n, func) {
+  switch(n.nodeType) {
+    case 1:  // Node.ELEMENT_NODE
+    {
+      const m = /^__MSG_([^_]*)__$/.exec(n.getAttribute('data-msgid'));
+      if (m) {
+        var val = func(m[1]);
+        if (val != undefined) {
+          n.innerHTML = val;
+        }
+      }
+      n.childNodes.forEach(c => fill(c, func));
+      break;
+    }
+  }
+};
+
+var fillIndex = function(outDir) {
+  var indexFile = `${outDir}/index.html`;
+  var html = readFileSync(indexFile, 'utf8');
+  var dom = domino.createDocument(html);
+  var locales = require(`./static/_locales/en_US/messages.json`);
+  fill(dom.body, function(m) {
+    return locales[m].message;
+  });
+  html = dom.serialize();
+  writeFileSync(indexFile, html, 'utf8');
+};
+
 var tasks = new Map();
 
 var task = function(key, msg, func) {
@@ -136,6 +168,7 @@ task('build', 'build the snowflake proxy', function() {
   concatJS(outDir, 'badge', 'embed.js', availableLangs());
   writeFileSync(`${outDir}/index.js`, translatedLangs(), 'utf8');
   execSync(`cat ${STATIC}/index.js >> ${outDir}/index.js`);
+  fillIndex(outDir);
   console.log('Snowflake prepared.');
 });
 
