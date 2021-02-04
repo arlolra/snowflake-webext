@@ -29,11 +29,11 @@ var getLang = function() {
     lang = override_lang;
   }
 
-  if (Object.prototype.hasOwnProperty.call(availableLangs, lang)) {
+  if (availableLangs.has(lang)) {
     return lang;
   }
   lang = lang.split('_')[0];
-  if (Object.prototype.hasOwnProperty.call(availableLangs, lang)) {
+  if (availableLangs.has(lang)) {
     return lang;
   }
   return defaultLang;
@@ -56,16 +56,16 @@ var fill = function(n, func) {
   }
 };
 
-
-fetch(`./_locales/${getLang()}/messages.json`)
+let gotLang = getLang();
+fetch(`./_locales/${gotLang}/messages.json`)
 .then((res) => {
   if (!res.ok) { return; }
   return res.json();
 })
 .then((json) => {
   var language = document.getElementById('language-switcher');
-  var lang = `${getLang()}`;
-  language.innerText = availableLangs[lang].name + ' (' + lang + ')';
+  var lang = `${gotLang}`;
+  language.innerText = `${availableLangs.get(lang)} (${lang})`;
   var messages = new Messages(json);
   fill(document.body, (m) => {
     return messages.getMessage(m);
@@ -73,11 +73,11 @@ fetch(`./_locales/${getLang()}/messages.json`)
 });
 
 // Populate language switcher list
-for (var lang in availableLangs) {
+availableLangs.forEach((name, lang) => {
   var languageList = document.getElementById('supported-languages');
   var link = document.createElement('a');
   link.setAttribute('href', '?lang='+lang);
   link.setAttribute('class', "dropdown-item");
-  link.innerText = availableLangs[lang].name + ' (' + lang + ')';
+  link.innerText = `${name} (${lang})`;
   languageList.lastChild.after(link);
-}
+});

@@ -78,21 +78,12 @@ var getDirs = function() {
   return dirs;
 };
 
-var availableLangs = function() {
-  let out = "const availableLangs = new Set([\n";
+var translatedLangs = function() {
+  let out = "const availableLangs = new Map([\n";
   let dirs = getDirs();
-  dirs = dirs.map(d => `  '${d}',`);
+  dirs = dirs.map(d => `['${d}', '${getDisplayName(d)}'],`);
   out += dirs.join("\n");
   out += "\n]);\n\n";
-  return out;
-};
-
-var translatedLangs = function() {
-  let out = "const availableLangs = {\n";
-  let dirs = getDirs();
-  dirs = dirs.map(d => `'${d}': {"name": '${getDisplayName(d)}'},`);
-  out += dirs.join("\n");
-  out += "\n};\n\n";
   return out;
 };
 
@@ -165,7 +156,7 @@ task('build', 'build the snowflake proxy', function() {
   execSync(`cp -r ${STATIC}/ ${outDir}/`);
   addVersion(outDir);
   copyTranslations(outDir);
-  concatJS(outDir, 'badge', 'embed.js', availableLangs());
+  concatJS(outDir, 'badge', 'embed.js', translatedLangs());
   writeFileSync(`${outDir}/index.js`, translatedLangs(), 'utf8');
   execSync(`cat ${STATIC}/index.js >> ${outDir}/index.js`);
   fillIndex(outDir);
