@@ -196,4 +196,4 @@ it would be helpful to get in touch with the [Anti-Censorship Team][2] at the
 Tor Project to let them know about your tool.
 
 [1]: https://chrome.google.com/webstore/detail/cupcake/dajjbehmbnbppjkcnpdkaniapgdppdnc
-[2]: https://trac.torproject.org/projects/tor/wiki/org/teams/AntiCensorshipTeam
+[2]: https://gitlab.torproject.org/tpo/anti-censorship/team
