@@ -79,5 +79,11 @@
   },
   "looksLike": {
     "message": "Which looks like this:"
+  },
+  "faq": {
+    "message": "FAQ"
+  },
+  "support": {
+    "message": "See the <a href=\"https://support.torproject.org/censorship/\">Censorship</a> topic in Tor's <a href=\"https://support.torproject.org/\">Support Portal</a>."
   }
 }
