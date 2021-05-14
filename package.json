@@ -23,7 +23,7 @@
   "author": "Serene Han",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "cldr": "^5.8.0",
+    "cldr": "^6.1.0",
     "domino": "^2.1.6",
     "eslint": "^6.0.1",
     "jasmine": "2.5.2"
