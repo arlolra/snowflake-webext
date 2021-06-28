@@ -71,7 +71,7 @@ class Snowflake {
     //update NAT type
     console.log("NAT type: "+ this.ui.natType);
     this.broker.setNATType(this.ui.natType);
-    recv = this.broker.getClientOffer(pair.id);
+    recv = this.broker.getClientOffer(pair.id, this.proxyPairs.length);
     recv.then((resp) => {
       var clientNAT = resp.NAT;
       if (!this.receiveOffer(pair, resp.Offer)) {

@@ -40,7 +40,7 @@ class Broker {
   // waits for a response containing some client offer that the Broker chooses
   // for this proxy..
   // TODO: Actually support multiple clients.
-  getClientOffer(id) {
+  getClientOffer(id, numClientsConnected) {
     return new Promise((fulfill, reject) => {
       var xhr;
       xhr = new XMLHttpRequest();
@@ -66,7 +66,14 @@ class Broker {
         }
       };
       this._xhr = xhr; // Used by spec to fake async Broker interaction
-      var data = {"Version": "1.2", "Sid": id, "Type": this.config.proxyType, "NAT": this.natType};
+      const clients = Math.floor(numClientsConnected / 8) * 8;
+      var data = {
+        Version: "1.2",
+        Sid: id,
+        Type: this.config.proxyType,
+        NAT: this.natType,
+        Clients: clients,
+      };
       return this._postRequest(xhr, 'proxy', JSON.stringify(data));
     });
   }
