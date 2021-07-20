@@ -21,7 +21,6 @@ class Broker {
 
     this.config = config;
     this.url = config.brokerUrl;
-    this.clients = 0;
     this.natType = "unknown";
     if (0 === this.url.indexOf('localhost', 0)) {
       // Ensure url has the right protocol + trailing slash.
@@ -144,4 +143,3 @@ Broker.MESSAGE = {
   UNEXPECTED: 'Unexpected status.'
 };
 
-Broker.prototype.clients = 0;
