@@ -100,7 +100,7 @@ var COOKIE_LIFETIME = "Thu, 01 Jan 2038 00:00:00 GMT";
 var COOKIE_EXPIRE = "Thu, 01 Jan 1970 00:00:01 GMT";
 
 function setSnowflakeCookie(val, expires) {
-  document.cookie = `${COOKIE_NAME}=${val}; path=/; expires=${expires};`;
+  document.cookie = `${COOKIE_NAME}=${val}; path=/; expires=${expires}; secure=true; samesite=none;`;
 }
 
 const defaultLang = 'en_US';
