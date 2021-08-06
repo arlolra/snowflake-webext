@@ -29,7 +29,7 @@
     "jasmine": "2.5.2"
   },
   "dependencies": {
-    "wrtc": "^0.4.4",
+    "wrtc": "^0.4.7",
     "ws": "^5.2.3",
     "xmlhttprequest": "^1.8.0"
   }
