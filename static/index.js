@@ -22,7 +22,7 @@ var getLang = function() {
   lang = lang.replace(/-/g, '_');
 
   //prioritize override language
-  var url_string = window.location.href; //window.location.href
+  var url_string = window.location.href;
   var url = new URL(url_string);
   var override_lang = url.searchParams.get("lang");
   if (override_lang != null) {

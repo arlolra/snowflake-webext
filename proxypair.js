@@ -1,4 +1,4 @@
-/* global snowflake, log, dbg, Util, PeerConnection, Parse, WS */
+/* global snowflake, log, dbg, Util, Parse, WS */
 
 /*
 Represents a single:
@@ -35,7 +35,7 @@ class ProxyPair {
 
   // Prepare a WebRTC PeerConnection and await for an SDP offer.
   begin() {
-    this.pc = new PeerConnection(this.pcConfig, {
+    this.pc = new RTCPeerConnection(this.pcConfig, {
       optional: [
         {
           DtlsSrtpKeyAgreement: true

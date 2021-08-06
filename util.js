@@ -1,5 +1,5 @@
 /* exported Util, Params, DummyRateLimit */
-/* global PeerConnection, Config */
+/* global Config */
 
 /*
 A JavaScript WebRTC snowflake proxy
@@ -14,7 +14,7 @@ class Util {
   }
 
   static hasWebRTC() {
-    return typeof PeerConnection === 'function';
+    return typeof RTCPeerConnection === 'function';
   }
 
   static hasCookies() {
@@ -28,7 +28,7 @@ class Util {
   static checkNATType(timeout) {
     return new Promise((fulfill, reject) => {
       let open = false;
-      let pc = new PeerConnection({iceServers: [
+      let pc = new RTCPeerConnection({iceServers: [
         {urls: 'stun:stun1.l.google.com:19302'}
       ]});
       let channel = pc.createDataChannel("NAT test");

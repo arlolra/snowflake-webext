@@ -1,4 +1,4 @@
-/* global log, dbg, DummyRateLimit, BucketRateLimit, SessionDescription, ProxyPair */
+/* global log, dbg, DummyRateLimit, BucketRateLimit, ProxyPair */
 
 /*
 A JavaScript WebRTC snowflake proxy
@@ -120,7 +120,7 @@ class Snowflake {
     try {
       offer = JSON.parse(desc);
       dbg('Received:\n\n' + offer.sdp + '\n');
-      sdp = new SessionDescription(offer);
+      sdp = new RTCSessionDescription(offer);
       if (pair.receiveWebRTCOffer(sdp)) {
         this.sendAnswer(pair);
         return true;

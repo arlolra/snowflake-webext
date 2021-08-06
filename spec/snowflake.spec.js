@@ -5,15 +5,15 @@ jasmine tests for Snowflake
 */
 
 // Fake browser functionality:
-class PeerConnection {
+class RTCPeerConnection {
   setRemoteDescription() {
     return true;
   }
   send() {}
 }
 
-class SessionDescription {}
-SessionDescription.prototype.type = 'offer';
+class RTCSessionDescription {}
+RTCSessionDescription.prototype.type = 'offer';
 
 class WebSocket {
   constructor() {
