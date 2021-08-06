@@ -40,9 +40,6 @@ class ProxyPair {
         {
           DtlsSrtpKeyAgreement: true
         },
-        {
-          RtpDataChannels: false
-        }
       ]
     });
     this.pc.onicecandidate = (evt) => {
