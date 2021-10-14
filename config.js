@@ -50,4 +50,4 @@ Config.prototype.pcConfig = {
   ]
 };
 
-Config.PROBEURL = "https://snowflake-broker.torproject.net:8443/probe";
+Config.PROBEURL = "https://snowflake-broker.freehaven.net:8443/probe";
