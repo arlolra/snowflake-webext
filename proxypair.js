@@ -35,13 +35,7 @@ class ProxyPair {
 
   // Prepare a WebRTC PeerConnection and await for an SDP offer.
   begin() {
-    this.pc = new RTCPeerConnection(this.pcConfig, {
-      optional: [
-        {
-          DtlsSrtpKeyAgreement: true
-        },
-      ]
-    });
+    this.pc = new RTCPeerConnection(this.pcConfig);
     this.pc.onicecandidate = (evt) => {
       // Browser sends a null candidate once the ICE gathering completes.
       if (null === evt.candidate && this.pc.connectionState !== 'closed') {
