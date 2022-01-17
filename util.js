@@ -21,29 +21,31 @@ class Util {
     return navigator.cookieEnabled;
   }
 
-  // returns a promise that fullfills to "restricted" if we
+  // returns a promise that resolves to "restricted" if we
   // fail to make a test connection to a known restricted
-  // NAT, "unrestricted" if the test connection fails, and
+  // NAT, "unrestricted" if the test connection succeeds, and
   // "unknown" if we fail to reach the probe test server
   static checkNATType(timeout) {
-    return new Promise((fulfill, reject) => {
+    let pc = new RTCPeerConnection({iceServers: [
+      {urls: 'stun:stun1.l.google.com:19302'}
+    ]});
+    let channel = pc.createDataChannel("NAT test");
+    return (new Promise((fulfill, reject) => {
       let open = false;
-      let pc = new RTCPeerConnection({iceServers: [
-        {urls: 'stun:stun1.l.google.com:19302'}
-      ]});
-      let channel = pc.createDataChannel("NAT test");
       channel.onopen = function() {
         open = true;
         fulfill("unrestricted");
-        channel.close();
-        pc.close();
       };
       pc.onicecandidate = (evt) => {
         if (evt.candidate == null) {
           //ice gathering is finished
           Util.sendOffer(pc.localDescription)
           .then((answer) => {
-            setTimeout(() => {if(!open) fulfill("restricted");}, timeout);
+            setTimeout(() => {
+              if(!open) {
+                fulfill("restricted");
+              }
+            }, timeout);
             pc.setRemoteDescription(JSON.parse(answer));
           }).catch((e) => {
             console.log(e);
@@ -57,7 +59,10 @@ class Util {
         console.log(e);
         reject("Error creating offer for probetest");
       });
-    });
+    }).finally(() => {
+      channel.close();
+      pc.close();
+    }));
   }
 
   // Assumes getClientOffer happened, and a WebRTC SDP answer has been generated.
