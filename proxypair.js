@@ -31,6 +31,7 @@ class ProxyPair {
     this.id = Util.genSnowflakeID();
     this.c2rSchedule = [];
     this.r2cSchedule = [];
+    this.counted = false;
   }
 
   // Prepare a WebRTC PeerConnection and await for an SDP offer.
@@ -74,7 +75,8 @@ class ProxyPair {
   prepareDataChannel(channel) {
     channel.onopen = () => {
       log('WebRTC DataChannel opened!');
-      snowflake.ui.setActive(true);
+      snowflake.ui.increaseClients();
+      this.counted = true;
       // This is the point when the WebRTC datachannel is done, so the next step
       // is to establish websocket to the server.
       return this.connectRelay();
@@ -82,7 +84,10 @@ class ProxyPair {
     channel.onclose = () => {
       log('WebRTC DataChannel closed.');
       snowflake.ui.setStatus('disconnected by webrtc.');
-      snowflake.ui.setActive(false);
+      if(this.counted) {
+        snowflake.ui.decreaseClients();
+        this.counted = false;
+      }
       this.flush();
       return this.close();
     };
@@ -122,7 +127,10 @@ class ProxyPair {
     this.relay.onclose = () => {
       log(relay.label + ' closed.');
       snowflake.ui.setStatus('disconnected.');
-      snowflake.ui.setActive(false);
+      if(this.counted) {
+        snowflake.ui.decreaseClients();
+        this.counted = false;
+      }
       this.flush();
       return this.close();
     };

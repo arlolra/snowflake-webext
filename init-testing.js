@@ -24,9 +24,14 @@ class DebugUI extends UI {
     return this.$status.appendChild(txt);
   }
 
-  setActive(connected) {
-    super.setActive(connected);
-    return this.$msglog.className = connected ? 'active' : '';
+  increaseClients() {
+    super.increaseClients();
+    return this.$msglog.className = this.active ? 'active' : '';
+  }
+
+  decreaseClients() {
+    super.decreaseClients();
+    return this.$msglog.className = this.active ? 'active' : '';
   }
 
   log(msg) {

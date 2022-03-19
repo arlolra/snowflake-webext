@@ -76,7 +76,7 @@ class WebExtUI extends UI {
     this.setIcon();
     if (!this.port) { return; }
     this.port.postMessage({
-      active: this.active,
+      clients: this.clients,
       total: this.stats.reduce((function(t, c) {
         return t + c;
       }), 0),
@@ -109,11 +109,6 @@ class WebExtUI extends UI {
 
   onDisconnect() {
     this.port = null;
-  }
-
-  setActive(connected) {
-    super.setActive(connected);
-    this.postActive();
   }
 
   setEnabled(enabled) {

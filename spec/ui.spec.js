@@ -46,9 +46,9 @@ describe('UI', function() {
   it('sets message log css correctly for debug mode', function() {
     var u;
     u = new DebugUI();
-    u.setActive(true);
+    u.increaseClients();
     expect(u.$msglog.className).toEqual('active');
-    u.setActive(false);
+    u.decreaseClients();
     expect(u.$msglog.className).toEqual('');
   });
 

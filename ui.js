@@ -19,16 +19,30 @@ class UI {
 
   setStatus() {}
 
-  setActive(connected) {
-    if (connected) {
-      this.stats[0] += 1;
+  get active() {
+    return this.clients > 0;
+  }
+
+  postActive() {}
+
+  increaseClients() {
+    this.clients += 1;
+    this.postActive();
+    return this.clients;
+  }
+
+  decreaseClients() {
+    this.clients -= 1;
+    if(this.clients < 0) {
+      this.clients = 0;
     }
-    return this.active = connected;
+    this.postActive();
+    return this.clients;
   }
 
   log() {}
 
 }
 
-UI.prototype.active = false;
+UI.prototype.clients = 0;
 UI.prototype.stats = null;

@@ -62,8 +62,7 @@ class BadgeUI extends UI {
 
   turnOn() {
     this.enabled = true;
-    const clients = this.active ? 1 : 0;
-    if (clients > 0) {
+    if (this.clients > 0) {
       this.setIcon('running');
     } else {
       this.setIcon('on');
@@ -71,7 +70,7 @@ class BadgeUI extends UI {
     const total = this.stats.reduce((function(t, c) {
       return t + c;
     }), 0);
-    this.popup.turnOn(clients, total);
+    this.popup.turnOn(this.clients, total);
   }
 
   turnOff() {
@@ -80,8 +79,7 @@ class BadgeUI extends UI {
     this.popup.turnOff();
   }
 
-  setActive(connected) {
-    super.setActive(connected);
+  postActive() {
     if(this.enabled) {
       this.turnOn();
     }
