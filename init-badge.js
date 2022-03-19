@@ -67,7 +67,9 @@ class BadgeUI extends UI {
     } else {
       this.setIcon('on');
     }
-    const total = 0;  // FIXME: Share stats from webext
+    const total = this.stats.reduce((function(t, c) {
+        return t + c;
+      }), 0);
     this.popup.turnOn(clients, total);
   }
 

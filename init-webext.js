@@ -12,17 +12,7 @@ class WebExtUI extends UI {
     this.onConnect = this.onConnect.bind(this);
     this.onMessage = this.onMessage.bind(this);
     this.onDisconnect = this.onDisconnect.bind(this);
-    this.initStats();
     chrome.runtime.onConnect.addListener(this.onConnect);
-  }
-
-  initStats() {
-    this.stats = [0];
-    setInterval((() => {
-      this.stats.unshift(0);
-      this.stats.splice(24);
-      this.postActive();
-    }), 60 * 60 * 1000);
   }
 
   checkNAT() {
@@ -123,9 +113,6 @@ class WebExtUI extends UI {
 
   setActive(connected) {
     super.setActive(connected);
-    if (connected) {
-      this.stats[0] += 1;
-    }
     this.postActive();
   }
 
@@ -161,8 +148,6 @@ class WebExtUI extends UI {
 }
 
 WebExtUI.prototype.port = null;
-
-WebExtUI.prototype.stats = null;
 
 WebExtUI.prototype.enabled = true;
 
