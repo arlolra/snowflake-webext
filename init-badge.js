@@ -68,8 +68,8 @@ class BadgeUI extends UI {
       this.setIcon('on');
     }
     const total = this.stats.reduce((function(t, c) {
-        return t + c;
-      }), 0);
+      return t + c;
+    }), 0);
     this.popup.turnOn(clients, total);
   }
 
