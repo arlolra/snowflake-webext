@@ -11,7 +11,6 @@ this proxy must always act as the answerer.
 TODO: More documentation
 */
 
-// Minimum viable snowflake for now - just 1 client.
 class Snowflake {
 
   // Prepare the Snowflake with a Broker (to find clients) and optional UI.

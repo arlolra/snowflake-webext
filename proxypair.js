@@ -40,8 +40,6 @@ class ProxyPair {
     this.pc.onicecandidate = (evt) => {
       // Browser sends a null candidate once the ICE gathering completes.
       if (null === evt.candidate && this.pc.connectionState !== 'closed') {
-        // TODO: Use a promise.all to tell Snowflake about all offers at once,
-        // once multiple proxypairs are supported.
         dbg('Finished gathering ICE candidates.');
         snowflake.broker.sendAnswer(this.id, this.pc.localDescription);
       }
